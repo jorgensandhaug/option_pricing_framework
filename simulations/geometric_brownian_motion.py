@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.stats.qmc import Sobol
 from scipy.stats import norm
-from .simulation_model import SimulationModel
+from simulations.simulation_model import SimulationModel
+from distributions.normal_distribution import NormalDistribution
 
 class GeometricBrownianMotion(SimulationModel):
     def simulate(self, simulation_params:dict=None):
@@ -34,7 +35,7 @@ class GeometricBrownianMotion(SimulationModel):
             raise ValueError("Number of Sobol samples is less than the number of simulations")
 
         # Transform Sobol samples to standard normal distribution
-        z = self.simulation_params['distribution_model'].ppf(sobol_samples)
+        z = self.simulation_params.get('distribution_model', NormalDistribution()).ppf(sobol_samples)
 
         prices[:, 1:] = S0 * np.exp(np.cumsum(drift + diffusion * z, axis=1))
         return prices
@@ -72,7 +73,7 @@ class GBMDiscreteStepVolatilities(SimulationModel):
         elif sobol_samples.shape[0] < simulations:
             raise ValueError("Number of Sobol samples is less than the number of simulations")
 
-        z = self.simulation_params['distribution_model'].ppf(sobol_samples)
+        z = self.simulation_params.get('distribution_model', NormalDistribution()).ppf(sobol_samples)
 
         drift = (r - delta - 0.5 * volatilities**2) * dt
         diffusion = volatilities * np.sqrt(dt)

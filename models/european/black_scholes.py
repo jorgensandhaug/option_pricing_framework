@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.stats import norm
-from .option_pricing_model import OptionPricingModel
+from models.option_pricing_model import OptionPricingModel
 
 class BlackScholesModel(OptionPricingModel):
     def d1(self, S0, K, T, r, sigma, delta):

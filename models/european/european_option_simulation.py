@@ -1,4 +1,4 @@
-from .simulation_based_option_pricing import SimulationBasedOptionPricingModel
+from ..simulation_based_option_pricing import SimulationBasedOptionPricingModel
 import numpy as np
 
 class EuropeanOptionSimulationModel(SimulationBasedOptionPricingModel):
