@@ -1,27 +1,13 @@
 from .simulation_based_option_pricing import SimulationBasedOptionPricingModel
+import numpy as np
 
 class EuropeanOptionSimulationModel(SimulationBasedOptionPricingModel):
-    def price(self, params: dict):
-        S0 = params['initial_stock_price']
+    def price(self, params: dict, simulation_params: dict=None):
         K = params['strike_price']
         T = params['time_to_maturity']
         r = params['risk_free_rate']
-        sigma = params['volatility']
-        delta = params.get('dividend_yield', 0.0)
         option_type = params['option_type']
-        steps = params.get('steps', 1000)
-        simulations = params.get('simulation_paths', 10000)
 
-        # Simulate price paths
-        simulation_params = {
-            'initial_stock_price': S0,
-            'time_to_maturity': T,
-            'risk_free_rate': r,
-            'volatility': sigma,
-            'dividend_yield': delta,
-            'time_steps': steps,
-            'simulation_paths': simulations
-        }
         simulated_prices = self.simulator.simulate(simulation_params)
 
         # Calculate the payoff for each path

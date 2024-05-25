@@ -5,5 +5,5 @@ class SimulationBasedOptionPricingModel(ABC):
         self.simulator = simulator
 
     @abstractmethod
-    def price(self, params: dict):
+    def price(self, params: dict, simulation_params: dict):
         pass

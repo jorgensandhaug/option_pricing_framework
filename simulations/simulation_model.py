@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from distributions.distribution_model import DistributionModel
 
 class SimulationModel(ABC):
-    def __init__(self, distribution_model: DistributionModel):
-        self.distribution_model = distribution_model
+    def __init__(self, simulation_params: dict):
+        self.simulation_params = simulation_params
 
     @abstractmethod
-    def simulate(self, params: dict):
+    def simulate(self, simulation_params: dict):
         pass
