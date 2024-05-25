@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class DistributionModel(ABC):
+class Distribution(ABC):
     @abstractmethod
     def sample(self, size):
         pass

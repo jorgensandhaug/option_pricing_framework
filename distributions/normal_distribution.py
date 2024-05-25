@@ -1,8 +1,8 @@
 import numpy as np
-from .distribution_model import DistributionModel
+from .distribution_model import Distribution
 from scipy.stats import norm
 
-class NormalDistribution(DistributionModel):
+class NormalDistribution(Distribution):
     def __init__(self, mean=0, std=1):
         self.mean = mean
         self.std = std

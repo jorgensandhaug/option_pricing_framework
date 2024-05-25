@@ -79,8 +79,8 @@ class GBMDiscreteStepVolatilities(SimulationModel):
         diffusion = volatilities * np.sqrt(dt)
 
         # Calculate the price paths
-        for t in range(1, steps + 1):
-            prices[:, t] = prices[:, t - 1] * np.exp(drift[t - 1] + diffusion[t - 1] * z[:, t - 1])
+        log_returns = np.cumsum(drift + diffusion * z, axis=1)
+        prices[:, 1:] = S0 * np.exp(log_returns)
 
         return prices
 

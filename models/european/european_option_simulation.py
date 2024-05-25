@@ -2,13 +2,14 @@ from ..simulation_based_option_pricing import SimulationBasedOptionPricingModel
 import numpy as np
 
 class EuropeanOptionSimulationModel(SimulationBasedOptionPricingModel):
-    def price(self, params: dict, simulation_params: dict=None):
+    def price(self, params: dict, simulation_params: dict=None, simulated_prices: np.array=None):
         K = params['strike_price']
         T = params['time_to_maturity']
         r = params['risk_free_rate']
         option_type = params['option_type']
 
-        simulated_prices = self.simulator.simulate(simulation_params)
+        if simulated_prices is None:
+            simulated_prices = self.simulator.simulate(simulation_params)
 
         # Calculate the payoff for each path
         if option_type == 'call':

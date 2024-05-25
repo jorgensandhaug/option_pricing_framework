@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.stats import t
-from .distribution_model import DistributionModel
+from .distribution_model import Distribution
 
-class ScaledTDistribution(DistributionModel):
+class ScaledTDistribution(Distribution):
     def __init__(self, df, loc=0, scale=1):
         self.df = df
         self.loc = loc
