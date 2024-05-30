@@ -6,6 +6,10 @@ from models.simulation_based_option_pricing import SimulationBasedOptionPricingM
 class LeastSquaresMonteCarloModel(SimulationBasedOptionPricingModel):
 
     def price(self, params: dict, simulation_params: Optional[dict] = None):
+        price, boundary = self.price_and_boundary(params, simulation_params)
+        return price
+
+    def price_and_boundary(self, params: dict, simulation_params: Optional[dict] = None):
         if not params['is_american']:
             raise ValueError("Least squares Monte Carlo only meant for American options")
         
@@ -20,13 +24,16 @@ class LeastSquaresMonteCarloModel(SimulationBasedOptionPricingModel):
 
         N = exercise_values.shape[1]
 
+        dt = params['time_to_maturity'] / N
         # Pre-compute constants
-        discount_factor = np.exp(-params['risk_free_rate'] * params['time_to_maturity']/N)
+        discount_factor = np.exp(-params['risk_free_rate'] * dt)
 
 
         did_exercise_matrix = np.zeros_like(exercise_values)
         # set last column of did_exercise_matrix to 1
         did_exercise_matrix[:, -1] = 1
+
+        exercise_boundary = np.full((N, 2), np.nan)
 
         # Loop through each time step (backwards)
         for i in range(N-2, -1, -1):
@@ -59,6 +66,19 @@ class LeastSquaresMonteCarloModel(SimulationBasedOptionPricingModel):
                 # Update option values, based on the decision to exercise or not, if exercise is beneficial, set option value to exercise value, else set to Y, which is the discounted option value at the next time step for that path
                 option_values[e, i] = np.where(exercise_chosen, exercise_values[e, i], Y)
 
+                # Store the exercise boundary as the minimum/maximum price where exercise is chosen
+                exercise_boundary[i, 0] = i*dt
+                if np.any(exercise_chosen):
+                    if params['option_type'] == 'call':
+                        # Get lowest price where exercise is beneficial
+                        exercise_boundary[i, 1] = np.min(prices[e, i]+1e6*(1-did_exercise_matrix[e, i])) 
+                    elif params['option_type'] == 'put':
+                        # Get highest price where exercise is beneficial
+                        exercise_boundary[i, 1] = np.max(prices[e, i]-1e6*(1-did_exercise_matrix[e, i]))
+                    else:
+                        raise ValueError("Invalid option type")
+
+
 
             # Paths where exercise value is 0
             en = ~e
@@ -70,4 +90,4 @@ class LeastSquaresMonteCarloModel(SimulationBasedOptionPricingModel):
 
         average_value = np.mean(option_values[:, 0])
 
-        return average_value
+        return average_value, exercise_boundary

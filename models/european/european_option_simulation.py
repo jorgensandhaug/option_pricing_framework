@@ -1,4 +1,4 @@
-from ..simulation_based_option_pricing import SimulationBasedOptionPricingModel
+from models.simulation_based_option_pricing import SimulationBasedOptionPricingModel
 import numpy as np
 
 class EuropeanOptionSimulationModel(SimulationBasedOptionPricingModel):
@@ -25,3 +25,5 @@ class EuropeanOptionSimulationModel(SimulationBasedOptionPricingModel):
         # Calculate the option price as the average discounted payoff
         option_price = np.mean(discounted_payoffs)
         return option_price
+
+
