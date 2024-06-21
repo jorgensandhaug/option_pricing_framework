@@ -9,7 +9,7 @@ class LeastSquaresMonteCarloModel(SimulationBasedOptionPricingModel):
         price, boundary = self.price_and_boundary(params, simulation_params)
         return price
 
-    def price_and_boundary(self, params: dict, simulation_params: Optional[dict] = None):
+    def price_and_boundary(self, params: dict, simulation_params: Optional[dict] = None): 
         if not params['is_american']:
             raise ValueError("Least squares Monte Carlo only meant for American options")
         
@@ -30,8 +30,8 @@ class LeastSquaresMonteCarloModel(SimulationBasedOptionPricingModel):
 
 
         did_exercise_matrix = np.zeros_like(exercise_values)
-        # set last column of did_exercise_matrix to 1
-        did_exercise_matrix[:, -1] = 1
+        # set last column of did_exercise_matrix to 1 if exercise value is positive, else 0
+        did_exercise_matrix[:, -1] = exercise_values[:, -1] > 0
 
         exercise_boundary = np.full((N, 2), np.nan)
 
@@ -87,7 +87,11 @@ class LeastSquaresMonteCarloModel(SimulationBasedOptionPricingModel):
             option_values[en, i] = discount_factor * option_values[en, i+1]
 
 
-
         average_value = np.mean(option_values[:, 0])
+
+        # Make sure only first 1s in exercise_boundary are used
+        first_ones = np.argmax(did_exercise_matrix, axis=1)
+        did_exercise_matrix = np.zeros_like(did_exercise_matrix)
+        did_exercise_matrix[np.arange(len(first_ones)), first_ones] = 1
 
         return average_value, exercise_boundary
